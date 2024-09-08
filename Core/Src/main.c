@@ -15,46 +15,24 @@
   *
   ******************************************************************************
   */
-/* USER CODE END Header */
-/* Includes ------------------------------------------------------------------*/
+
 #include "main.h"
 
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
-/* USER CODE END Includes */
-
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
-
-/* USER CODE END PTD */
-
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-
-/* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
-
-/* USER CODE END PM */
-
-/* Private variables ---------------------------------------------------------*/
-
-/* USER CODE BEGIN PV */
-
-/* USER CODE END PV */
-
-/* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-/* USER CODE BEGIN PFP */
-
-/* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
 
-/* USER CODE END 0 */
+
+void WaitForAMoment(int Moment)
+{
+	/**
+	 * volatile prevents compiler from optimizing which removes the delay
+	 */
+	volatile int i ,j;
+	for( i=0; i < Moment; i++){
+		j++;
+	}
+}
 
 /**
   * @brief  The application entry point.
@@ -63,40 +41,37 @@ void SystemClock_Config(void);
 int main(void)
 {
 
-  /* USER CODE BEGIN 1 */
-
-  /* USER CODE END 1 */
-
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
-  /* USER CODE BEGIN Init */
+  RCC ->AHBENR |= RCC_AHBNER_GPIOCEN;
 
-  /* USER CODE END Init */
+  GPIOC ->MODER |= GPIO_MODER_MODER6_0;
+  GPIOC ->MODER &= ~GPIO_MODER_MODER6_1;
+  GPIOC ->OTYPER &= ~GPIO_OTYPER_OT_6;
+  GPIOC ->OSPEEDR &= ~GPIO_OSPEEDR_OSPEEDR6_0;
+  GPIOC -> PUPDR &= ~GPIO_PUPDR_PUPDR6;
+
 
   /* Configure the system clock */
   SystemClock_Config();
-
-  /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
-
-  /* Initialize all configured peripherals */
-  /* USER CODE BEGIN 2 */
-
-  /* USER CODE END 2 */
+// Set any control Registers for PortC Pin 6
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
+	  //	  Turn on LED
+	  GPIOC ->BSRR |= GPIO_BSRR_BS_6;
+	  //	  Wait for a moment
+	  WaitForAMoment(200000);
+	  //	  Turn off the LED
+	  GPIOC ->BSRR |= GPIO_BSRR_BR_6;
+	  //	  Wait for a moment
+	  WaitForAMoment(200000);
   }
-  /* USER CODE END 3 */
 }
 
 /**
@@ -133,10 +108,6 @@ void SystemClock_Config(void)
     Error_Handler();
   }
 }
-
-/* USER CODE BEGIN 4 */
-
-/* USER CODE END 4 */
 
 /**
   * @brief  This function is executed in case of error occurrence.
